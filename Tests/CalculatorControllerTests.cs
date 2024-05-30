@@ -21,8 +21,10 @@ public class CalculatorControllerTests : BaseTests
     [TestCase("70", "xyz", HttpStatusCode.InternalServerError, "Incorrect value for name Height")]
     [TestCase("0", "1.75", HttpStatusCode.InternalServerError, "Value shoud be greather 0, but side Mass has value 0")]
     [TestCase("70", "0", HttpStatusCode.InternalServerError, "Value shoud be greather 0, but side Height has value 0")]
-    [TestCase("-70", "1.75", HttpStatusCode.InternalServerError, "Value shoud be greather 0, but side Mass has value -70")]
-    [TestCase("70", "-1.75", HttpStatusCode.InternalServerError, "Value shoud be greather 0, but side Height has value -1,75")]
+    [TestCase("-70", "1.75", HttpStatusCode.InternalServerError,
+        "Value shoud be greather 0, but side Mass has value -70")]
+    [TestCase("70", "-1.75", HttpStatusCode.InternalServerError,
+        "Value shoud be greather 0, but side Height has value -1,75")]
     [TestCase("", "1.75", HttpStatusCode.InternalServerError, "Incorrect value for name Mass")]
     [TestCase("70", "", HttpStatusCode.InternalServerError, "Incorrect value for name Height")]
     public async Task Get_BMI_ReturnsExpectedResult(string? mass, string? height, HttpStatusCode expectedStatusCode,
@@ -31,10 +33,12 @@ public class CalculatorControllerTests : BaseTests
         // Act
         var response = await _client.GetAsync($"/Calculator?m={mass}&h={height}");
         var responseString = await response.Content.ReadAsStringAsync();
+        var isResponseStringContainsExpected =
+            responseString.Contains(expectedResponseSubstring, StringComparison.OrdinalIgnoreCase);
 
         // Assert
         response.StatusCode.Should().Be(expectedStatusCode);
-        responseString.Should().Contain(expectedResponseSubstring);
+        isResponseStringContainsExpected.Should().BeTrue();
     }
 
     [Test]
@@ -58,7 +62,7 @@ public class CalculatorControllerTests : BaseTests
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
         responseString.Should().Contain("Incorrect value for name Height");
     }
-    
+
     [Test]
     public async Task Get_BMI_ShouldReturnInternalServerError_WhenMassParameterIsMissing()
     {
